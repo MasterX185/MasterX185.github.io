@@ -3,133 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MasterX185 - Repositories</title>
-  <style>
-    :root {
-      font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-      color-scheme: dark;
-      color: #ffffff;
-      background-color: #121212;
-    }
-
-    body {
-      margin: 0;
-      padding: 2rem;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-
-    #loading {
-      text-align: center;
-      font-size: 1.2rem;
-      color: #888;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: #1e1e1e;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
-    }
-
-    .card a {
-      color: #646cff;
-      text-decoration: none;
-    }
-
-    .card a:hover {
-      text-decoration: underline;
-    }
-
-    .card p {
-      color: #aaa;
-      font-size: 0.9rem;
-      flex-grow: 1;
-    }
-
-    .meta {
-      display: flex;
-      gap: 1rem;
-      font-size: 0.85rem;
-      color: #888;
-      margin-top: 1rem;
-    }
-
-    .lang {
-      margin-left: auto;
-      font-weight: bold;
-      color: #ddd;
-    }
-  </style>
+  <title>MasterX185 - Dev Portfolio</title>
 </head>
 <body>
-<div class="container">
-  <h1>Meine GitHub Repositories</h1>
-  <div id="loading">Lade Repositories...</div>
-  <div id="repo-grid" class="grid"></div>
-</div>
+<!-- Animierter Hintergrund -->
+<div class="bg-animation"></div>
 
-<script>
-  const USERNAME = 'MasterX185';
+<!-- Hier wird alles von JS reingeladen -->
+<div id="app"></div>
 
-  async function fetchRepos() {
-    const loadingEl = document.querySelector('#loading');
-    const gridEl = document.querySelector('#repo-grid');
-
-    try {
-      const response = await fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated`);
-
-      if (!response.ok) {
-        throw new Error(`Fehler beim Laden: ${response.status}`);
-      }
-
-      const repos = await response.json();
-      loadingEl.style.display = 'none';
-
-      repos.forEach(repo => {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        card.innerHTML = `
-            <h2><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></h2>
-            <p>${repo.description || 'Keine Beschreibung vorhanden.'}</p>
-            <div class="meta">
-              <span>⭐ ${repo.stargazers_count}</span>
-              <span>🍴 ${repo.forks_count}</span>
-              ${repo.language ? `<span class="lang">${repo.language}</span>` : ''}
-            </div>
-          `;
-        gridEl.appendChild(card);
-      });
-    } catch (error) {
-      loadingEl.textContent = `Fehler: ${error.message}`;
-      loadingEl.style.color = '#ff6b6b';
-    }
-  }
-
-  fetchRepos();
-</script>
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
