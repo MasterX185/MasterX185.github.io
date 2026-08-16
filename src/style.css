@@ -1,216 +1,152 @@
 :root {
-  --bg-dark: #0a0a0f;
-  --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.6);
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border-light: rgba(255, 255, 255, 0.15);
-  --glass-border-dark: rgba(255, 255, 255, 0.02);
+  --bg-dark: #050508;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.4);
 }
 
 body, html {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--bg-dark);
-  color: var(--text-main);
+  color: #fff;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
 /* =========================================
-   1. LIQUID BACKGROUND ANIMATION
+   1. EXTREME LIQUID BACKGROUND
 ========================================= */
 .liquid-bg {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
   z-index: -1;
-  overflow: hidden;
-  background: #000;
-  /* Ein leichter statischer Noise-Filter macht das Glas realistischer */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  background: var(--bg-dark);
 }
 
 .blob {
   position: absolute;
-  filter: blur(80px);
+  filter: blur(90px); /* Extrem weich */
   border-radius: 50%;
-  animation: float 20s infinite alternate ease-in-out;
-  opacity: 0.6;
+  opacity: 0.7;
+  /* Hardwarebeschleunigung erzwingen */
+  will-change: transform;
 }
 
-.blob-1 {
-  width: 500px; height: 500px;
-  background: #4facfe;
-  top: -10%; left: -10%;
-  animation-delay: 0s;
-}
+/* Positionierung in der Mitte, Bewegung rein über transform */
+.blob-1 { width: 600px; height: 600px; background: #ff007f; top: 10%; left: 20%; animation: move1 20s infinite alternate ease-in-out; }
+.blob-2 { width: 500px; height: 500px; background: #7000ff; bottom: 10%; right: 10%; animation: move2 25s infinite alternate-reverse ease-in-out; }
+.blob-3 { width: 400px; height: 400px; background: #00f2fe; top: 40%; left: 50%; animation: move3 30s infinite alternate ease-in-out; }
+.blob-4 { width: 350px; height: 350px; background: #ffaa00; top: -10%; right: 20%; animation: move1 22s infinite alternate-reverse ease-in-out; }
+.blob-5 { width: 450px; height: 450px; background: #00ff88; bottom: -20%; left: 10%; animation: move3 28s infinite alternate ease-in-out; }
 
-.blob-2 {
-  width: 400px; height: 400px;
-  background: #8a2be2;
-  bottom: -10%; right: -5%;
-  animation-duration: 25s;
-  animation-direction: alternate-reverse;
-}
+@keyframes move1 { 100% { transform: translate(150px, 100px) scale(1.2); } }
+@keyframes move2 { 100% { transform: translate(-200px, -150px) scale(0.9); } }
+@keyframes move3 { 100% { transform: translate(-100px, 200px) scale(1.1); } }
 
-.blob-3 {
-  width: 300px; height: 300px;
-  background: #00f2fe;
-  top: 40%; left: 40%;
-  animation-duration: 30s;
-}
-
-@keyframes float {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0, 0) scale(1); }
+/* =========================================
+   2. LIQUID GLASS KERNKLASSE
+========================================= */
+/* Diese Klasse wird für alles genutzt, was wie Glas aussehen soll */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(35px) saturate(200%);
+  -webkit-backdrop-filter: blur(35px) saturate(200%);
+  border-radius: 24px;
+  border-top: 1px solid var(--glass-border);
+  border-left: 1px solid var(--glass-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  box-shadow: 0 30px 60px var(--glass-shadow),
+  inset 0 1px 0 rgba(255, 255, 255, 0.3); /* Helle Lichtkante innen */
 }
 
 /* =========================================
-   2. APP LAYOUT & PROFIL
+   3. LAYOUT & PROFILE
 ========================================= */
-#app {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 4rem 1.5rem;
-}
+#app { max-width: 1000px; margin: 0 auto; padding: 4rem 1.5rem; }
 
 .profile-header {
-  text-align: center;
-  margin-bottom: 5rem;
-  opacity: 0;
-  animation: fadeInDown 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  text-align: center; margin-bottom: 3rem;
+  opacity: 0; animation: fadeInDown 1s forwards;
 }
 
 .avatar {
-  width: 140px; height: 140px;
-  border-radius: 50%;
-  /* Liquid Avatar Border */
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-  inset 0 0 20px rgba(255, 255, 255, 0.2);
-  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 150px; height: 150px; border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.4);
+  transition: transform 0.4s ease;
 }
-.avatar:hover {
-  transform: scale(1.1) translateY(-10px);
-}
+.avatar:hover { transform: scale(1.08) rotate(5deg); }
 
 .title-gradient {
-  font-size: 2.8rem;
-  margin-bottom: 0.5rem;
-  font-weight: 800;
-  letter-spacing: -1px;
-  background: linear-gradient(135deg, #ffffff, #a8c0ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 3rem; margin: 1rem 0 0.5rem;
+  background: linear-gradient(135deg, #fff, #a8c0ff);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
+.bio { font-size: 1.1rem; color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 1.5rem; }
+.stats { display: flex; justify-content: center; gap: 1.5rem; color: rgba(255,255,255,0.6); }
 
-.bio {
-  color: var(--text-muted);
-  max-width: 600px;
-  margin: 1rem auto;
-  line-height: 1.6;
-  font-size: 1.1rem;
+/* =========================================
+   4. NEUE SEKTIONEN (SKILLS & KONTAKT)
+========================================= */
+.content-section {
+  padding: 2rem; margin-bottom: 2rem;
+  text-align: center;
+}
+.content-section h2 { margin-top: 0; font-size: 1.5rem; }
+
+.skills-grid {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;
+}
+.skill-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1.5rem; border-radius: 30px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+.skill-tag:hover { background: rgba(255, 255, 255, 0.2); }
+
+.links-grid {
+  display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+}
+.glass-btn {
+  padding: 0.8rem 2rem;
+  color: #fff; text-decoration: none; font-weight: bold;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s;
+}
+.glass-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
 }
 
 /* =========================================
-   3. LIQUID GLASS CARDS
+   5. REPOSITORY CARDS
 ========================================= */
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2.5rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;
 }
 
 .card {
-  position: relative;
-  background: var(--glass-bg);
-
-  /* Der Kern des Liquid-Effekts: Blur + Saturate erhöht die Farbintensität der Blobs dahinter */
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
-
-  border-radius: 24px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-
-  /* Lichtreflexion auf dem Glas: Oben und Links hell, Unten und Rechts dunkel */
-  border-top: 1px solid var(--glass-border-light);
-  border-left: 1px solid var(--glass-border-light);
-  border-bottom: 1px solid var(--glass-border-dark);
-  border-right: 1px solid var(--glass-border-dark);
-
-  /* Voluminöser Schatten */
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
-  inset 0 2px 4px rgba(255, 255, 255, 0.1);
-
-  opacity: 0;
-  transform: translateY(40px);
-  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  padding: 1.5rem; display: flex; flex-direction: column;
+  opacity: 0; transform: translateY(40px);
   transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
-  overflow: hidden;
 }
-
-/* Subtiler interner Glanz-Effekt */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%; width: 50%; height: 100%;
-  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
-  transform: skewX(-25deg);
-  transition: left 0.7s ease;
-}
-
-.card:hover::before {
-  left: 200%;
-}
-
 .card:hover {
   transform: translateY(-10px);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
-  inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 40px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.5);
 }
+.card h3 { margin: 0 0 1rem; }
+.card a { color: #fff; text-decoration: none; }
+.card p { color: rgba(255,255,255,0.7); font-size: 0.95rem; flex-grow: 1; margin-bottom: 1.5rem; }
+.meta { display: flex; gap: 1rem; font-size: 0.85rem; color: #aaa; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+.lang { margin-left: auto; color: #4facfe; font-weight: bold; }
 
-.card h3 {
-  margin: 0 0 1rem;
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.card a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.card p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  flex-grow: 1;
-  margin-bottom: 1.5rem;
-  line-height: 1.6;
-}
-
-.meta {
-  display: flex; gap: 1rem; font-size: 0.85rem; color: #aaa;
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding-top: 1.2rem;
-}
-.lang {
-  margin-left: auto;
-  color: #4facfe;
-  font-weight: 600;
-}
-
-/* =========================================
-   4. ANIMATIONEN
-========================================= */
-@keyframes fadeInUp {
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }

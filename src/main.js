@@ -3,64 +3,75 @@ import './style.css'
 const USERNAME = 'MasterX185'
 const app = document.querySelector('#app')
 
-// Lade-Ansicht aufbauen
+// Grundgerüst mit neuen Sektionen aufbauen
 app.innerHTML = `
   <div id="profile-container"></div>
-  <div id="loading" style="text-align:center; margin-top:4rem; color: #8a2be2;">
-    <h2>Initialisiere Verbindungen... 🚀</h2>
+  
+  <div class="content-section glass-panel" style="animation-delay: 0.2s; opacity: 0; animation: fadeInUp 0.8s forwards;">
+    <h2>💻 Tech Stack & Skills</h2>
+    <div class="skills-grid">
+      <span class="skill-tag">JavaScript</span>
+      <span class="skill-tag">HTML5 & CSS3</span>
+      <span class="skill-tag">Vite</span>
+      <span class="skill-tag">Git & GitHub</span>
+      <span class="skill-tag">Linux / Raspberry Pi</span>
+    </div>
   </div>
+
+  <div class="content-section glass-panel" style="animation-delay: 0.4s; opacity: 0; animation: fadeInUp 0.8s forwards;">
+    <h2>📫 Kontakt & Links</h2>
+    <div class="links-grid">
+      <a href="https://github.com/${USERNAME}" target="_blank" class="glass-btn">GitHub Profil</a>
+      <a href="#" class="glass-btn">E-Mail schreiben</a>
+    </div>
+  </div>
+
+  <h2 style="text-align: center; margin-top: 4rem; color: #fff;">Meine Projekte</h2>
+  <div id="loading" style="text-align:center; color: #4facfe;">Lade Repositories...</div>
   <div id="repo-grid" class="grid"></div>
 `
 
 async function buildPortfolio() {
     try {
-        // Profil-Daten und Repositories gleichzeitig von der API abfragen
         const [profileRes, reposRes] = await Promise.all([
             fetch(`https://api.github.com/users/${USERNAME}`),
-            fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100`)
+            fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=12`)
         ])
 
-        if (!profileRes.ok || !reposRes.ok) {
-            throw new Error('Fehler beim Abrufen der GitHub-API. Eventuell Rate-Limit erreicht.')
-        }
+        if (!profileRes.ok || !reposRes.ok) throw new Error('API-Fehler')
 
         const profile = await profileRes.json()
         const repos = await reposRes.json()
 
-        // Lade-Text ausblenden
         document.querySelector('#loading').style.display = 'none'
 
-        // 1. Profil-Kopfzeile rendern
+        // Profil rendern
         document.querySelector('#profile-container').innerHTML = `
       <div class="profile-header">
         <a href="${profile.html_url}" target="_blank">
-          <img src="${profile.avatar_url}" alt="Avatar von ${USERNAME}" class="avatar" />
+          <img src="${profile.avatar_url}" alt="Avatar" class="avatar" />
         </a>
         <h1 class="title-gradient">${profile.name || profile.login}</h1>
-        <p class="bio">${profile.bio || 'Willkommen auf meinem GitHub-Portfolio. Hier baue ich Dinge mit Code.'}</p>
-        <div style="display:flex; justify-content:center; gap: 2rem; color: #777; font-size: 0.9rem;">
+        <p class="bio">${profile.bio || 'Willkommen in meinem digitalen Workspace. Ich entwickle Software und scripte auf meinem Raspberry Pi.'}</p>
+        <div class="stats">
           <span>👥 ${profile.followers} Follower</span>
-          <span>📦 ${profile.public_repos} öffentliche Repos</span>
+          <span>📦 ${profile.public_repos} Repositories</span>
         </div>
       </div>
     `
 
-        // 2. Repositories rendern
+        // Repositories rendern
         const grid = document.querySelector('#repo-grid')
-
-        // Wir filtern Forks raus (optional, mach das weg, wenn du Forks sehen willst)
         const ownRepos = repos.filter(repo => !repo.fork)
 
         ownRepos.forEach((repo, index) => {
             const card = document.createElement('div')
-            card.className = 'card'
-
-            // Der Stagger-Effekt: Jede Karte lädt 0.1 Sekunden später als die vorherige
-            card.style.animationDelay = `${index * 0.1}s`
+            card.className = 'card glass-panel'
+            card.style.animationDelay = `${0.6 + (index * 0.1)}s` // Staggered Animation
 
             card.innerHTML = `
-        <h3><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a></h3>
-        <p>${repo.description || '<i>Keine Beschreibung hinterlegt.</i>'}</p>
+        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
+        <p>${repo.description || 'Keine Beschreibung verfügbar.'}</p>
         <div class="meta">
           <span>⭐ ${repo.stargazers_count}</span>
           <span>🍴 ${repo.forks_count}</span>
@@ -71,12 +82,8 @@ async function buildPortfolio() {
         })
 
     } catch (error) {
-        document.querySelector('#loading').innerHTML = `
-      <h2 style="color: #ff4757;">Systemfehler</h2>
-      <p>${error.message}</p>
-    `
+        document.querySelector('#loading').innerHTML = `<h3 style="color: #ff4757;">Fehler beim Laden der API.</h3>`
     }
 }
 
-// Startschuss
 buildPortfolio()
