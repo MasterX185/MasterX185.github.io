@@ -1,128 +1,216 @@
-/* Globale Variablen für einen Cyberpunk/Neon-Vibe */
 :root {
-  --primary: #8a2be2;
-  --secondary: #4169e1;
-  --bg-color: #0d0d12;
-  --text-color: #f0f0f0;
+  --bg-dark: #0a0a0f;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border-light: rgba(255, 255, 255, 0.15);
+  --glass-border-dark: rgba(255, 255, 255, 0.02);
 }
 
 body, html {
   margin: 0;
   padding: 0;
   font-family: 'Inter', system-ui, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* 1. Aufwändiger, aber performanter Hintergrund-Effekt */
-.bg-animation {
+/* =========================================
+   1. LIQUID BACKGROUND ANIMATION
+========================================= */
+.liquid-bg {
   position: fixed;
-  top: -50%; left: -50%; width: 200%; height: 200%;
-  background:
-          radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.1), transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(65, 105, 225, 0.15), transparent 40%);
-  animation: rotateBg 25s linear infinite;
-  z-index: -1; /* Bleibt im Hintergrund */
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background: #000;
+  /* Ein leichter statischer Noise-Filter macht das Glas realistischer */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
 }
-@keyframes rotateBg { 100% { transform: rotate(360deg); } }
 
-/* Layout-Container */
+.blob {
+  position: absolute;
+  filter: blur(80px);
+  border-radius: 50%;
+  animation: float 20s infinite alternate ease-in-out;
+  opacity: 0.6;
+}
+
+.blob-1 {
+  width: 500px; height: 500px;
+  background: #4facfe;
+  top: -10%; left: -10%;
+  animation-delay: 0s;
+}
+
+.blob-2 {
+  width: 400px; height: 400px;
+  background: #8a2be2;
+  bottom: -10%; right: -5%;
+  animation-duration: 25s;
+  animation-direction: alternate-reverse;
+}
+
+.blob-3 {
+  width: 300px; height: 300px;
+  background: #00f2fe;
+  top: 40%; left: 40%;
+  animation-duration: 30s;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* =========================================
+   2. APP LAYOUT & PROFIL
+========================================= */
 #app {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 4rem 1.5rem;
 }
 
-/* 2. Profil-Kopfzeile mit Einflug-Animation */
 .profile-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 5rem;
   opacity: 0;
   animation: fadeInDown 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .avatar {
-  width: 150px;
-  height: 150px;
+  width: 140px; height: 140px;
   border-radius: 50%;
-  border: 3px solid transparent;
-  background: linear-gradient(var(--bg-color), var(--bg-color)) padding-box,
-  linear-gradient(45deg, var(--primary), var(--secondary)) border-box;
-  box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  /* Liquid Avatar Border */
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+  inset 0 0 20px rgba(255, 255, 255, 0.2);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .avatar:hover {
-  transform: scale(1.08) rotate(5deg);
-  box-shadow: 0 0 40px rgba(65, 105, 225, 0.8);
+  transform: scale(1.1) translateY(-10px);
 }
 
 .title-gradient {
-  font-size: 2.5rem;
+  font-size: 2.8rem;
   margin-bottom: 0.5rem;
-  background: linear-gradient(90deg, #b37af5, #7da0fa);
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #ffffff, #a8c0ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.bio { color: #a0a0a0; max-width: 600px; margin: 1rem auto; line-height: 1.6; }
+.bio {
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 1rem auto;
+  line-height: 1.6;
+  font-size: 1.1rem;
+}
 
-/* 3. Grid & Glassmorphism-Karten */
+/* =========================================
+   3. LIQUID GLASS CARDS
+========================================= */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px); /* Glassmorphism-Effekt */
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 1.5rem;
+  position: relative;
+  background: var(--glass-bg);
+
+  /* Der Kern des Liquid-Effekts: Blur + Saturate erhöht die Farbintensität der Blobs dahinter */
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+
+  border-radius: 24px;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  /* Start-Zustand für die Animation: */
+
+  /* Lichtreflexion auf dem Glas: Oben und Links hell, Unten und Rechts dunkel */
+  border-top: 1px solid var(--glass-border-light);
+  border-left: 1px solid var(--glass-border-light);
+  border-bottom: 1px solid var(--glass-border-dark);
+  border-right: 1px solid var(--glass-border-dark);
+
+  /* Voluminöser Schatten */
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
+  inset 0 2px 4px rgba(255, 255, 255, 0.1);
+
   opacity: 0;
   transform: translateY(40px);
-  animation: fadeInUp 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  transition: all 0.3s ease;
+  animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+  overflow: hidden;
 }
 
-/* Neon-Glow Hover-Effekt */
+/* Subtiler interner Glanz-Effekt */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 50%; height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.05), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.7s ease;
+}
+
+.card:hover::before {
+  left: 200%;
+}
+
 .card:hover {
-  transform: translateY(-8px) scale(1.02);
-  border-color: rgba(138, 43, 226, 0.5);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(138, 43, 226, 0.2);
+  transform: translateY(-10px);
   background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
+  inset 0 2px 4px rgba(255, 255, 255, 0.2);
 }
 
-.card h3 { margin: 0 0 0.5rem; font-size: 1.3rem; }
-.card a { color: #fff; text-decoration: none; position: relative; }
-
-/* Unterstreichungs-Animation beim Hovern */
-.card a::after {
-  content: ''; position: absolute; left: 0; bottom: -3px;
-  width: 0%; height: 2px;
-  background: var(--primary);
-  transition: width 0.3s ease;
+.card h3 {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
 }
-.card a:hover::after { width: 100%; }
 
-.card p { color: #999; font-size: 0.95rem; flex-grow: 1; margin-bottom: 1.5rem; line-height: 1.5; }
+.card a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  flex-grow: 1;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
 
 .meta {
-  display: flex; gap: 1rem; font-size: 0.85rem; color: #888;
-  border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;
+  display: flex; gap: 1rem; font-size: 0.85rem; color: #aaa;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 1.2rem;
 }
-.lang { margin-left: auto; color: #7da0fa; font-weight: 600; }
+.lang {
+  margin-left: auto;
+  color: #4facfe;
+  font-weight: 600;
+}
 
-/* 4. Keyframe-Animationen */
+/* =========================================
+   4. ANIMATIONEN
+========================================= */
 @keyframes fadeInUp {
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-40px); }
+  from { opacity: 0; transform: translateY(-30px); }
   to { opacity: 1; transform: translateY(0); }
 }
